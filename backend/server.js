@@ -65,6 +65,20 @@ app.post('/api/analyze', async (req, res) => {
 
   } catch (error) {
     console.error('Error analyzing image:', error);
+    
+    // If the API key is leaked/invalid, return a mock response so the UI can still be previewed
+    if (error.status === 403 || error.message?.includes('API key')) {
+      console.log('Returning mock data since the API key is invalid or leaked.');
+      return res.json({
+        dangerScore: 65,
+        verdict: "Mock Analysis: This is a simulated result because your Gemini API key is currently disabled.",
+        harmfulIngredients: [
+          { name: "Simulated Harmful Ingredient", reason: "This is a placeholder for a harmful ingredient." }
+        ],
+        safeIngredients: ["Simulated Safe Ingredient 1", "Simulated Safe Ingredient 2"]
+      });
+    }
+
     res.status(500).json({ error: 'Failed to analyze image. Ensure API key is set and image is valid.' });
   }
 });
