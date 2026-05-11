@@ -13,7 +13,7 @@ function App() {
     setErrorMsg('');
     
     try {
-      const response = await fetch('http://localhost:3001/api/analyze', {
+      const response = await fetch('http://https://food-lab-backend.onrender.com/api/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
