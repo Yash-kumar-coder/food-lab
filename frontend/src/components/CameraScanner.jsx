@@ -1,10 +1,11 @@
 import { useRef, useState, useCallback } from 'react';
 import Webcam from 'react-webcam';
-import { Camera, Upload } from 'lucide-react';
+import { Camera, Upload, RefreshCw } from 'lucide-react';
 
 export default function CameraScanner({ onCapture }) {
   const webcamRef = useRef(null);
   const [isCameraActive, setIsCameraActive] = useState(true);
+  const [facingMode, setFacingMode] = useState('environment');
 
   const capture = useCallback(() => {
     if (webcamRef.current) {
@@ -26,17 +27,31 @@ export default function CameraScanner({ onCapture }) {
     }
   };
 
+  const toggleCamera = () => {
+    setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
+  };
+
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto space-y-6">
-      <div className="relative w-full aspect-[4/3] bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center">
+      <div className="relative w-full aspect-[4/3] bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center group">
         {isCameraActive ? (
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            videoConstraints={{ facingMode: 'environment' }}
-            className="object-cover w-full h-full"
-          />
+          <>
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              videoConstraints={{ facingMode }}
+              className="object-cover w-full h-full"
+            />
+            {/* Flip camera button */}
+            <button
+              onClick={toggleCamera}
+              className="absolute top-4 right-4 p-3 bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 rounded-full transition-all active:scale-95 z-10"
+              title="Flip Camera"
+            >
+              <RefreshCw size={20} />
+            </button>
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center p-8 text-center text-white/60">
             <Upload size={48} className="mb-4 text-white/40" />
