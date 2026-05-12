@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback } from 'react';
 import Webcam from 'react-webcam';
-import { Camera, Upload, RefreshCw } from 'lucide-react';
+import { Camera, Image as ImageIcon, RefreshCw, UploadCloud } from 'lucide-react';
 
 export default function CameraScanner({ onCapture }) {
   const webcamRef = useRef(null);
@@ -32,8 +32,10 @@ export default function CameraScanner({ onCapture }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto space-y-6">
-      <div className="relative w-full aspect-[4/3] bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center group">
+    <div className="flex flex-col items-center w-full max-w-md mx-auto relative h-[75vh]">
+      
+      {/* Main Viewfinder */}
+      <div className="relative w-full h-full bg-gray-100 rounded-[2.5rem] overflow-hidden shadow-sm border border-gray-200/50 flex flex-col items-center justify-center">
         {isCameraActive ? (
           <>
             <Webcam
@@ -41,59 +43,65 @@ export default function CameraScanner({ onCapture }) {
               ref={webcamRef}
               screenshotFormat="image/jpeg"
               videoConstraints={{ facingMode }}
-              className="object-cover w-full h-full"
+              className="absolute inset-0 object-cover w-full h-full"
             />
-            {/* Flip camera button */}
+            {/* Flip camera button - subtle glass top right */}
             <button
               onClick={toggleCamera}
-              className="absolute top-4 right-4 p-3 bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 rounded-full transition-all active:scale-95 z-10"
+              className="absolute top-6 right-6 p-3 bg-white/30 hover:bg-white/50 text-gray-800 backdrop-blur-md rounded-full shadow-sm transition-all active:scale-95 z-10"
               title="Flip Camera"
             >
               <RefreshCw size={20} />
             </button>
+            
+            {/* Minimalist target frame */}
+            <div className="absolute inset-0 m-8 border-2 border-white/50 rounded-3xl pointer-events-none z-0 mix-blend-overlay"></div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center p-8 text-center text-white/60">
-            <Upload size={48} className="mb-4 text-white/40" />
-            <p>Upload a clear photo of the ingredient list.</p>
+          <div className="flex flex-col items-center justify-center p-8 text-center text-gray-500 z-10">
+            <UploadCloud size={48} className="mb-4 text-gray-300" />
+            <p className="font-medium text-gray-600">Select an image from your gallery.</p>
           </div>
         )}
-        
-        {/* Overlay frame for guidance */}
-        <div className="absolute inset-0 border-[3px] border-white/20 rounded-3xl m-4 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-1/2 border-2 border-dashed border-white/40 rounded-xl" />
-        </div>
       </div>
 
-      <div className="flex flex-col w-full gap-4 sm:flex-row">
-        {isCameraActive ? (
-          <button
-            onClick={capture}
-            className="flex-1 py-4 px-6 flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 transition-all active:scale-[0.98]"
-          >
-            <Camera size={24} />
-            <span>Scan Ingredients</span>
-          </button>
-        ) : (
-          <label className="flex-1 py-4 px-6 flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 transition-all active:scale-[0.98] cursor-pointer">
-            <Upload size={24} />
-            <span>Choose Image</span>
-            <input 
-              type="file" 
-              accept="image/*" 
-              className="hidden" 
-              onChange={handleFileUpload}
-            />
-          </label>
-        )}
+      {/* Floating Bottom Bar */}
+      <div className="absolute bottom-6 left-6 right-6 p-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex items-center justify-between z-20">
         
+        {/* Switch Mode Button */}
         <button
           onClick={() => setIsCameraActive(!isCameraActive)}
-          className="p-4 flex items-center justify-center bg-white/10 hover:bg-white/15 text-white rounded-2xl border border-white/10 transition-colors"
+          className="p-4 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors active:scale-95"
           title={isCameraActive ? "Switch to Upload" : "Switch to Camera"}
         >
-          {isCameraActive ? <Upload size={24} /> : <Camera size={24} />}
+          {isCameraActive ? <ImageIcon size={22} /> : <Camera size={22} />}
         </button>
+
+        {/* Capture / Upload Primary Action */}
+        <div className="flex-1 flex justify-center">
+          {isCameraActive ? (
+            <button
+              onClick={capture}
+              className="w-16 h-16 rounded-full border-[4px] border-gray-900 bg-white flex items-center justify-center shadow-md active:scale-90 transition-transform relative"
+            >
+              <div className="w-12 h-12 rounded-full bg-gray-900" />
+            </button>
+          ) : (
+            <label className="py-3 px-6 flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer">
+              <ImageIcon size={20} />
+              <span>Choose Image</span>
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleFileUpload}
+              />
+            </label>
+          )}
+        </div>
+
+        {/* Placeholder to balance flex spacing with the left button */}
+        <div className="w-[54px] h-[54px]" />
       </div>
     </div>
   );
