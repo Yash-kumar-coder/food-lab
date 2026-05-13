@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenAI, Type } = require('@google/genai');
 const dotenv = require('dotenv');
 
 // Load environment variables
@@ -49,7 +49,29 @@ app.post('/api/analyze', async (req, res) => {
         }
       ],
       config: {
-        responseMimeType: 'application/json'
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            dangerScore: { type: Type.NUMBER, description: "A score from 0 to 100 representing the danger level" },
+            verdict: { type: Type.STRING, description: "A short verdict summarizing the health impact" },
+            harmfulIngredients: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  name: { type: Type.STRING },
+                  reason: { type: Type.STRING }
+                }
+              }
+            },
+            safeIngredients: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
+            }
+          },
+          required: ["dangerScore", "verdict", "harmfulIngredients", "safeIngredients"]
+        }
       }
     });
 
