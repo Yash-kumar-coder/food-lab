@@ -106,7 +106,7 @@ app.post('/api/analyze', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Backend server running on http://localhost:${port}`);
+  console.log(`Backend server running on https://localhost:${port}`);
   if (!process.env.GEMINI_API_KEY) {
     console.warn('WARNING: GEMINI_API_KEY is not set in the environment variables.');
   }
